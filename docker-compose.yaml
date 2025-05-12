@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/app
+      - /app/node_modules  # avoid overwriting node_modules from host
+    ports:
+      - "3000:3000"  # adjust based on your app
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
