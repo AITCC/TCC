@@ -7,6 +7,7 @@
 - Format code: `npm run format`
 - Dev with lint-watch: `npm run start:dev`
 - Run tests: `npm run test`
+- Run acceptance tests: `npm run test:cucumber`
 
 ## Running with Docker
 
