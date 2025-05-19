@@ -3,7 +3,11 @@ import { GoogleGenAI } from "@google/genai";
 
 
 export class GeminiAgent implements LLMAgent {
-  private genAI = new GoogleGenAI({apiKey: ''});
+  private genAI: GoogleGenAI;
+  
+  constructor(apiKey: string) {
+    this.genAI = new GoogleGenAI({ apiKey: apiKey })
+  }
 
   async checkFileNameCandidate(filename: string): Promise<boolean> {
     const response = await this.genAI.models.generateContent({
