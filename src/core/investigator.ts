@@ -6,9 +6,15 @@ export class Investigator {
     private agent: LLMAgent,
   ) {}
 
-  investigate(folder: Folder): string[] {
-    return folder
-      .listFiles()
-      .filter((filename) => this.agent.checkFileNameCandidate(filename));
+  async investigate(folder: Folder): Promise<string[]> {
+    const candidates: string[] = [];
+    const files = folder.listFiles();
+    for (const file of files) {
+      const isCandidate = await this.agent.checkFileNameCandidate(file);
+      if (isCandidate) {
+        candidates.push(file);
+      }
+    }  
+    return candidates;
   } 
 }

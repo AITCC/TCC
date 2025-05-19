@@ -1,3 +1,3 @@
 export interface LLMAgent {
-  checkFileNameCandidate: (filename: string) => boolean;
+  checkFileNameCandidate: (filename: string) => Promise<boolean>;
 }
