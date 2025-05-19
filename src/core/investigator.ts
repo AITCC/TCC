@@ -7,6 +7,8 @@ export class Investigator {
   ) {}
 
   investigate(folder: Folder): string[] {
-    return folder.listFiles().filter((filename) => this.agent.checkFileNameCandidate(filename));
+    return folder
+      .listFiles()
+      .filter((filename) => this.agent.checkFileNameCandidate(filename));
   } 
 }
