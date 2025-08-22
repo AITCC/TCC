@@ -33,6 +33,12 @@ describe(Folder, () => {
   });
 
   describe('getFile(filePath: string): CodeFile', () => {
+    it('should throw an error when the folderName does not match', () => {
+      expect(() => root.getFile('wrongname/somefile.ts'))
+        .toThrow(FolderNotFoundError);
+    })
+
+
     it('should return a CodeFile directly in the Folder identifying the first path segment is the own folder', () => {
       const file = root.getFile('project/config.json');
       expect(file).toBe(configFile);
@@ -55,7 +61,7 @@ describe(Folder, () => {
     it('should throw an error when the filePath has folders that do not exist in the Folder', () => {
       expect(() => root.getFile('project/nonExistingFolder/somefile.ts'))
         .toThrow(FolderNotFoundError);
-      
+
       expect(() => root.getFile('project/main/nonExistingFolder/somefile.ts'))
         .toThrow(FolderNotFoundError);
     });
@@ -63,10 +69,10 @@ describe(Folder, () => {
     it('should throw an error when the filePath points to a non existing file in existing subfolders in the Folder', () => {
       expect(() => root.getFile('project/nonExisting.json'))
         .toThrow(CodeFileNotFoundError);
-      
+
       expect(() => root.getFile('project/main/nonExisting.ts'))
         .toThrow(CodeFileNotFoundError);
-      
+
       expect(() => root.getFile('project/main/core/nonExisting.ts'))
         .toThrow(CodeFileNotFoundError);
     });
