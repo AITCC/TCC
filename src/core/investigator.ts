@@ -1,10 +1,11 @@
 import { Folder } from "./folder";
 import { LLMAgent } from "./llmagent";
+import { CodeFile } from "./codefile";
 
 export class Investigator {
   constructor(
     private agent: LLMAgent,
-  ) {}
+  ) { }
 
   async investigate(folder: Folder): Promise<string[]> {
     const candidates: string[] = [];
@@ -14,7 +15,17 @@ export class Investigator {
       if (isCandidate) {
         candidates.push(file);
       }
-    }  
+    }
     return candidates;
-  } 
+  }
+
+  async confirm(filePath: string, folder: Folder): Promise<boolean> {
+    try {
+      const codeFile = folder.getFile(filePath);
+      return await this.agent.confirmCandidateContent(codeFile);
+    } catch (error) {
+      return false;
+    }
+  }
+
 }

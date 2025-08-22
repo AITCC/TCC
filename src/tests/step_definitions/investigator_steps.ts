@@ -6,6 +6,7 @@ import { Investigator } from '../../core/investigator';
 import { LLMAgent } from '../../core/llmagent';
 import { Folder } from '../../core/folder';
 import { CodeFile } from '../../core/codefile';
+import { CodeFileMocks } from './helpers/code_file_mocks';
 
 class InvestigatorWorld extends World {
   projectFolders: Map<string, Folder> = new Map();
@@ -14,6 +15,11 @@ class InvestigatorWorld extends World {
   investigator!: Investigator;
   actualCandidates?: string[];
   allProcessedFiles: string[] = [];
+
+  mockAgentInstance!: LLMAgent;
+  projectRoot!: Folder;
+  candidatesFullName!: string[];
+  confirmedCandidates!: string[];
 
   constructor(options: any) {
     super(options);
@@ -75,6 +81,28 @@ class InvestigatorWorld extends World {
     this.allProcessedFiles = folder.listFiles();
     return folder;
   }
+
+  createCandidatesAsOneControllerTwoServices(applicationId: string): Folder {
+    this.projectRoot = new Folder(applicationId, [
+      new Folder("src", [
+        new Folder("controllers", [], [
+          CodeFileMocks.annotatedTypescriptController("User"),
+          CodeFileMocks.typescriptControllerHelper("User")
+        ]),
+        new Folder("services", [], [
+          CodeFileMocks.annotatedTypescriptService("User"),
+          CodeFileMocks.annotatedTypescriptService("UserProfile"),
+        ]),
+      ], [])
+    ], []);
+
+    this.candidatesFullName = [
+      `${applicationId}/src/controllers/user.controller.ts`,
+      `${applicationId}/src/controllers/user.controller.helper.ts`
+    ];
+
+    return this.projectRoot;
+  }
 }
 
 setWorldConstructor(InvestigatorWorld);
@@ -96,13 +124,39 @@ Given('an LLM agent configured to identify {string} files without {string}', fun
     const hasKeyword = kws.some(kw => filename.includes(kw));
     const hasExcludedKeyword = xkws.some(xkw => filename.includes(xkw));
 
-    return hasKeyword && !hasExcludedKeyword;
+    return new Promise(resolve => {
+      resolve(hasKeyword && !hasExcludedKeyword);
+    });
   });
   this.agentInstance = instance(this.mockAgent);
   this.investigator = new Investigator(this.agentInstance);
 });
 
-When('the investigator processes the {string} root folder', function (this: InvestigatorWorld, folderName: string) {
+Given("a list of candidates of {string} application including {string}", function (this: InvestigatorWorld, applicationId: string, applicationContentStructure: string) {
+  console.log("world: ", this);
+  console.log("applicationId: ", applicationId);
+  console.log("applicationContentStructure: ", applicationContentStructure);
+
+  if (applicationContentStructure === "a controller and two services") {
+    this.createCandidatesAsOneControllerTwoServices(applicationId);
+  } else {
+    throw new Error(`Unknown application content structure: ${applicationContentStructure}`);
+  }
+});
+
+Given("a mock LLM agent configured to look for {string} in a class", function (this: InvestigatorWorld, lookingFor: string) {
+  this.mockAgent = mock<LLMAgent>();
+  when(this.mockAgent.confirmCandidateContent(anything()))
+    .thenCall((codeFile: CodeFile) => {
+      const content: string = codeFile.read();
+      return content.includes(lookingFor);
+    });
+  
+  this.mockAgentInstance = instance(this.mockAgent);
+  this.investigator = new Investigator(this.mockAgentInstance);
+});
+
+When('the investigator processes the {string} root folder', async function (this: InvestigatorWorld, folderName: string) {
   const folderToProcess = this.projectFolders.get(folderName);
   if (!folderToProcess) {
     throw new Error(`Folder ${folderName} not found in context.`);
@@ -110,7 +164,21 @@ When('the investigator processes the {string} root folder', function (this: Inve
   if (!this.investigator) {
     throw new Error('Investigator not initialized. Ensure agent is configured first.');
   }
-  this.actualCandidates = this.investigator.investigate(folderToProcess);
+  this.actualCandidates = await this.investigator.investigate(folderToProcess);
+});
+
+When("the investigator is asked to confirm the candidates of the application", async function (this: InvestigatorWorld) {
+  const confirmed: string[] = [];
+
+  for (const candidateFullName of this.candidatesFullName) {
+    const isConfirmed: boolean = await this.investigator.confirm(candidateFullName, this.projectRoot);
+
+    if (isConfirmed) {
+      confirmed.push(candidateFullName);
+    }
+  }
+
+  this.confirmedCandidates = confirmed;
 });
 
 Then('the identified candidate files should be:', function (this: InvestigatorWorld, dataTable: DataTable) {
@@ -130,4 +198,9 @@ Then('the LLM agent\'s "checkFileNameCandidate" method should have been called f
   this.allProcessedFiles.forEach(filePath => {
     verify(this.mockAgent.checkFileNameCandidate(filePath)).atLeast(1);
   });
+});
+
+Then("the confirmed files should be:", function (this: InvestigatorWorld, dataTable: DataTable) {
+  const expectedConfirmed = dataTable.rows().map(row => row[0]).sort();
+  expect(this.confirmedCandidates.sort()).toEqual(expectedConfirmed);
 });
