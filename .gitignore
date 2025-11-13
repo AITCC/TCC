@@ -1,3 +1,6 @@
-node_modules
+node_modules/
+dist/
+output/
 .env
-dist
+*.log
+.DS_Store
