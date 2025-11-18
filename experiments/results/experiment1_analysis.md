@@ -15,13 +15,13 @@ This experiment evaluates the proposed system's capability to automatically gene
 
 ### 2.2 System Characteristics
 
-| Metric | Value |
-|--------|-------|
-| Total files | 2 |
-| Source code files | 1 |
-| Lines of code (LOC) | 46 |
-| API endpoints | 6 |
-| HTTP methods | GET, POST, PUT, DELETE |
+| Metric              | Value                  |
+| ------------------- | ---------------------- |
+| Total files         | 2                      |
+| Source code files   | 1                      |
+| Lines of code (LOC) | 46                     |
+| API endpoints       | 6                      |
+| HTTP methods        | GET, POST, PUT, DELETE |
 
 ### 2.3 Ground Truth
 
@@ -29,14 +29,14 @@ The subject system implements six REST API endpoints, as shown in Table 1.
 
 ### Table 1: API Endpoints in Subject System
 
-| Endpoint ID | HTTP Method | Path | Description |
-|-------------|-------------|------|-------------|
-| E1.1 | GET | `/` | Root endpoint returning greeting |
-| E1.2 | GET | `/api/items` | Retrieve all items |
-| E1.3 | POST | `/api/items` | Create new item |
-| E1.4 | GET | `/api/items/:id` | Retrieve item by identifier |
-| E1.5 | PUT | `/api/items/:id` | Update item by identifier |
-| E1.6 | DELETE | `/api/items/:id` | Delete item by identifier |
+| Endpoint ID | HTTP Method | Path             | Description                      |
+| ----------- | ----------- | ---------------- | -------------------------------- |
+| E1.1        | GET         | `/`              | Root endpoint returning greeting |
+| E1.2        | GET         | `/api/items`     | Retrieve all items               |
+| E1.3        | POST        | `/api/items`     | Create new item                  |
+| E1.4        | GET         | `/api/items/:id` | Retrieve item by identifier      |
+| E1.5        | PUT         | `/api/items/:id` | Update item by identifier        |
+| E1.6        | DELETE      | `/api/items/:id` | Delete item by identifier        |
 
 ## 3. Execution Process
 
@@ -72,13 +72,13 @@ The system extracted API endpoint information from the confirmed file using the 
 ### Table 2: Endpoint Extraction Results
 
 | Ground Truth ID | Extracted | Path Correct | Method Correct | Schema Correct |
-|-----------------|-----------|--------------|----------------|----------------|
-| E1.1 | Yes | Yes | Yes | Yes |
-| E1.2 | Yes | Yes | Yes | Yes |
-| E1.3 | Yes | Yes | Yes | Yes |
-| E1.4 | Yes | Yes | Yes | Yes |
-| E1.5 | Yes | Yes | Yes | Yes |
-| E1.6 | Yes | Yes | Yes | Yes |
+| --------------- | --------- | ------------ | -------------- | -------------- |
+| E1.1            | Yes       | Yes          | Yes            | Yes            |
+| E1.2            | Yes       | Yes          | Yes            | Yes            |
+| E1.3            | Yes       | Yes          | Yes            | Yes            |
+| E1.4            | Yes       | Yes          | Yes            | Yes            |
+| E1.5            | Yes       | Yes          | Yes            | Yes            |
+| E1.6            | Yes       | Yes          | Yes            | Yes            |
 
 **Results:**
 
@@ -127,15 +127,15 @@ F1-Score = 2 × (Precision × Recall) / (Precision + Recall) = 1.00 (100%)
 
 The generated OpenAPI specification was evaluated against the following criteria:
 
-| Criterion | Result |
-|-----------|--------|
-| Valid JSON | ✓ Pass |
-| OpenAPI 3.0 compliant | ✓ Pass |
-| All endpoints documented | ✓ Pass |
-| HTTP methods correct | ✓ Pass |
-| Path parameters identified | ✓ Pass |
-| Request schemas present | ✓ Pass |
-| Response schemas present | ✓ Pass |
+| Criterion                     | Result  |
+| ----------------------------- | ------- |
+| Valid JSON                    | ✓ Pass |
+| OpenAPI 3.0 compliant         | ✓ Pass |
+| All endpoints documented      | ✓ Pass |
+| HTTP methods correct          | ✓ Pass |
+| Path parameters identified    | ✓ Pass |
+| Request schemas present       | ✓ Pass |
+| Response schemas present      | ✓ Pass |
 | Appropriate HTTP status codes | ✓ Pass |
 
 ## 5. Generated Artifacts Analysis
